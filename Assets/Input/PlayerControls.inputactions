@@ -76,15 +76,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "Diary",
-                    "type": "Button",
-                    "id": "35213a19-9f20-4441-a73f-a73aa8e308ad",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -177,28 +168,6 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "",
-                    "id": "e5215a68-bff8-4cad-a1b5-b3e65386b93f",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Diary",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "c4396c2f-1b90-4aa1-ab42-dfa8363a26d1",
-                    "path": "<Keyboard>/o",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Diary",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
                     "name": "2D Vector",
                     "id": "0724505d-170a-4b07-a282-94b3dc56faf8",
                     "path": "2DVector",
@@ -261,6 +230,45 @@
                     "processors": "",
                     "groups": "",
                     "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Diary",
+            "id": "b29cde63-a77e-42f2-8769-7ce566a4f6a2",
+            "actions": [
+                {
+                    "name": "Diary",
+                    "type": "Button",
+                    "id": "b464fac8-dd32-4eb7-a40d-5a7a19a5ce3a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "ea79c8fe-ee29-4aa6-9bdd-2859e73b13a5",
+                    "path": "<Keyboard>/o",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Diary",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d10b1d4e-a082-4187-83f9-72dbb6f2931e",
+                    "path": "",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Diary",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

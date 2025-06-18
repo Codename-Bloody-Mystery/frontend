@@ -162,15 +162,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Diary"",
-                    ""type"": ""Button"",
-                    ""id"": ""35213a19-9f20-4441-a73f-a73aa8e308ad"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -263,28 +254,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
-                    ""name"": """",
-                    ""id"": ""e5215a68-bff8-4cad-a1b5-b3e65386b93f"",
-                    ""path"": """",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Diary"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
-                    ""name"": """",
-                    ""id"": ""c4396c2f-1b90-4aa1-ab42-dfa8363a26d1"",
-                    ""path"": ""<Keyboard>/o"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Diary"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
-                {
                     ""name"": ""2D Vector"",
                     ""id"": ""0724505d-170a-4b07-a282-94b3dc56faf8"",
                     ""path"": ""2DVector"",
@@ -351,6 +320,45 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Diary"",
+            ""id"": ""b29cde63-a77e-42f2-8769-7ce566a4f6a2"",
+            ""actions"": [
+                {
+                    ""name"": ""Diary"",
+                    ""type"": ""Button"",
+                    ""id"": ""b464fac8-dd32-4eb7-a40d-5a7a19a5ce3a"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""ea79c8fe-ee29-4aa6-9bdd-2859e73b13a5"",
+                    ""path"": ""<Keyboard>/o"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Diary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d10b1d4e-a082-4187-83f9-72dbb6f2931e"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Diary"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -365,12 +373,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_Flashlight = m_Player.FindAction("Flashlight", throwIfNotFound: true);
         m_Player_Inventory = m_Player.FindAction("Inventory", throwIfNotFound: true);
-        m_Player_Diary = m_Player.FindAction("Diary", throwIfNotFound: true);
+        // Diary
+        m_Diary = asset.FindActionMap("Diary", throwIfNotFound: true);
+        m_Diary_Diary = m_Diary.FindAction("Diary", throwIfNotFound: true);
     }
 
     ~@PlayerControls()
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, PlayerControls.Player.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Diary.enabled, "This will cause a leak and performance issues, PlayerControls.Diary.Disable() has not been called.");
     }
 
     /// <summary>
@@ -454,7 +465,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_Flashlight;
     private readonly InputAction m_Player_Inventory;
-    private readonly InputAction m_Player_Diary;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -498,10 +508,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/Inventory".
         /// </summary>
         public InputAction @Inventory => m_Wrapper.m_Player_Inventory;
-        /// <summary>
-        /// Provides access to the underlying input action "Player/Diary".
-        /// </summary>
-        public InputAction @Diary => m_Wrapper.m_Player_Diary;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -552,9 +558,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Inventory.started += instance.OnInventory;
             @Inventory.performed += instance.OnInventory;
             @Inventory.canceled += instance.OnInventory;
-            @Diary.started += instance.OnDiary;
-            @Diary.performed += instance.OnDiary;
-            @Diary.canceled += instance.OnDiary;
         }
 
         /// <summary>
@@ -590,9 +593,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Inventory.started -= instance.OnInventory;
             @Inventory.performed -= instance.OnInventory;
             @Inventory.canceled -= instance.OnInventory;
-            @Diary.started -= instance.OnDiary;
-            @Diary.performed -= instance.OnDiary;
-            @Diary.canceled -= instance.OnDiary;
         }
 
         /// <summary>
@@ -626,6 +626,102 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="PlayerActions" /> instance referencing this action map.
     /// </summary>
     public PlayerActions @Player => new PlayerActions(this);
+
+    // Diary
+    private readonly InputActionMap m_Diary;
+    private List<IDiaryActions> m_DiaryActionsCallbackInterfaces = new List<IDiaryActions>();
+    private readonly InputAction m_Diary_Diary;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Diary".
+    /// </summary>
+    public struct DiaryActions
+    {
+        private @PlayerControls m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public DiaryActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Diary/Diary".
+        /// </summary>
+        public InputAction @Diary => m_Wrapper.m_Diary_Diary;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Diary; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="DiaryActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(DiaryActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="DiaryActions" />
+        public void AddCallbacks(IDiaryActions instance)
+        {
+            if (instance == null || m_Wrapper.m_DiaryActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_DiaryActionsCallbackInterfaces.Add(instance);
+            @Diary.started += instance.OnDiary;
+            @Diary.performed += instance.OnDiary;
+            @Diary.canceled += instance.OnDiary;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="DiaryActions" />
+        private void UnregisterCallbacks(IDiaryActions instance)
+        {
+            @Diary.started -= instance.OnDiary;
+            @Diary.performed -= instance.OnDiary;
+            @Diary.canceled -= instance.OnDiary;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="DiaryActions.UnregisterCallbacks(IDiaryActions)" />.
+        /// </summary>
+        /// <seealso cref="DiaryActions.UnregisterCallbacks(IDiaryActions)" />
+        public void RemoveCallbacks(IDiaryActions instance)
+        {
+            if (m_Wrapper.m_DiaryActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="DiaryActions.AddCallbacks(IDiaryActions)" />
+        /// <seealso cref="DiaryActions.RemoveCallbacks(IDiaryActions)" />
+        /// <seealso cref="DiaryActions.UnregisterCallbacks(IDiaryActions)" />
+        public void SetCallbacks(IDiaryActions instance)
+        {
+            foreach (var item in m_Wrapper.m_DiaryActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_DiaryActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="DiaryActions" /> instance referencing this action map.
+    /// </summary>
+    public DiaryActions @Diary => new DiaryActions(this);
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Player" which allows adding and removing callbacks.
     /// </summary>
@@ -689,6 +785,14 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnInventory(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Diary" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="DiaryActions.AddCallbacks(IDiaryActions)" />
+    /// <seealso cref="DiaryActions.RemoveCallbacks(IDiaryActions)" />
+    public interface IDiaryActions
+    {
         /// <summary>
         /// Method invoked when associated input action "Diary" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

@@ -26,7 +26,7 @@ public class PlayerMovement : MonoBehaviour
     public float minPitch = -80f;
     public float maxPitch = 80f;
 
-    private PlayerControls controls;
+    private GameInput controls;
     private Vector3 velocity;
     private Rigidbody playerRigidbody;
     private CapsuleCollider capsule;
@@ -37,14 +37,14 @@ public class PlayerMovement : MonoBehaviour
 
     // Camera members
     private Transform cameraTransform;
-    private float pitch; // текущий угол наклона
+    private float pitch; // current tilt angle
     
     /// <summary>
     /// Initializes components and input controls.
     /// </summary>
     private void Awake()
     {
-        controls = new PlayerControls();
+        controls = GameInput.GetInstance();
         playerRigidbody = GetComponent<Rigidbody>();
         capsule = GetComponent<CapsuleCollider>();
         cameraTransform = Camera.main.transform;
@@ -60,22 +60,6 @@ public class PlayerMovement : MonoBehaviour
         playerRigidbody.freezeRotation = true;
         Cursor.visible = false;
         raycastDistance = (standHeight / 2) + 0.2f;
-    }
-
-    /// <summary>
-    /// Enables input when component is active.
-    /// </summary>
-    private void OnEnable()
-    {
-        controls.Enable();
-    }
-
-    /// <summary>
-    /// Disables input when component is inactive.
-    /// </summary>
-    private void OnDisable()
-    {
-        controls.Disable();
     }
     
     /// <summary>
@@ -101,9 +85,9 @@ public class PlayerMovement : MonoBehaviour
     private void Move()
     {
         // ————— MOVEMENT —————
-        Vector2 moveDirection = controls.Player.Move.ReadValue<Vector2>();
-        bool isRun = controls.Player.Run.IsPressed();
-        bool isCrouching = controls.Player.Crouch.IsPressed();
+        Vector2 moveDirection = controls.Controls.Player.Move.ReadValue<Vector2>();
+        bool isRun = controls.Controls.Player.Run.IsPressed();
+        bool isCrouching = controls.Controls.Player.Crouch.IsPressed();
         float speed = isRun ? runSpeed : walkSpeed;
         capsule.height = isCrouching ? crouchHeight : standHeight;
 
@@ -125,7 +109,7 @@ public class PlayerMovement : MonoBehaviour
 
         // ————— JUMP —————
         
-        if (controls.Player.Jump.triggered && isGrounded)
+        if (controls.Controls.Player.Jump.triggered && isGrounded)
         {
             Jump();
         }
@@ -155,7 +139,8 @@ public class PlayerMovement : MonoBehaviour
             cameraTransform.localPosition, targetCamPos, Time.deltaTime * 10f
             );
     }
-
+    
+    /// 
     /// <summary>
     /// Initiates a jump by setting upward velocity.
     /// </summary>
@@ -174,7 +159,7 @@ public class PlayerMovement : MonoBehaviour
     private void Rotate()
     {
         // Read mouse delta
-        Vector2 delta = controls.Player.Look.ReadValue<Vector2>();
+        Vector2 delta = controls.Controls.Player.Look.ReadValue<Vector2>();
         
         // Apply sensitivity
         float yaw   = delta.x * lookSensitivity;
@@ -198,12 +183,12 @@ public class PlayerMovement : MonoBehaviour
         if (playerRigidbody.linearVelocity.y < 0) 
         {
             // Falling: Apply fall multiplier to make descent faster
-            playerRigidbody.linearVelocity += Vector3.up * Physics.gravity.y * fallMultiplier * Time.fixedDeltaTime;
+            playerRigidbody.linearVelocity += Physics.gravity.y * fallMultiplier * Time.fixedDeltaTime * Vector3.up;
         }
         else if (playerRigidbody.linearVelocity.y > 0)
         {
             // Rising: Change multiplier to make player reach peak of jump faster
-            playerRigidbody.linearVelocity += Vector3.up * Physics.gravity.y * ascendMultiplier  * Time.fixedDeltaTime;
+            playerRigidbody.linearVelocity += Physics.gravity.y * ascendMultiplier  * Time.fixedDeltaTime * Vector3.up;
         }
     }
 }
